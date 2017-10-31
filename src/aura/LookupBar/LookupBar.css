@@ -1,0 +1,10 @@
+.THIS .inline {
+    display: inline !important;
+}
+.THIS .recordCard:hover {
+    background: lightgray;
+}
+.THIS .recordCard > .slds-icon_container .slds-icon {
+    height: 1.60rem;
+    width: 1.60rem;
+}

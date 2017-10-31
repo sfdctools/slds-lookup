@@ -1,0 +1,50 @@
+<aura:component controller="LookupSearchController">
+	<aura:attribute name="valuelist" type="sObject[]"/>
+	<aura:attribute name="objName" type="String"/>
+	<aura:attribute name="fieldval" type="String"/>
+	<aura:attribute name="flag" type="String"/>
+	<aura:attribute name="objectName" type="String"/>
+	<aura:attribute name="close" type="Boolean" default="false"/>
+	<aura:attribute name="search" type="Boolean" default="true"/>
+	<aura:attribute name="isOpen" type="Boolean" default="false" />
+	<aura:attribute name="icon" type="String"/>
+	<aura:attribute name="isReq" type="Boolean"/>
+	<aura:attribute name="alert" type="Boolean" />
+	<aura:registerEvent name="lookupEvent" type="c:LookupKey"/>
+	<aura:registerEvent name="showToast" type="force:showToast"/>
+	<aura:handler name="init" value="{!this}" action="{!c.initialize}"/>
+	<aura:if isTrue="{!v.alert}">
+		<ui:message title="Error" severity="error" closable="false">
+            Invalid object/field
+  		</ui:message>
+		<aura:set attribute="else">
+			<div class="slds-form-element">
+				<label class="slds-form-element__label" for="text-input-id-1">{!v.fieldval}</label>
+				<div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_right">
+					<div>
+						<ui:inputText aura:id="txtLookup" class="slds-input" required="{!isReq}" focus="{!c.doInit}"  keyup="{!c.searchKeyChange}" updateOn="keyup"/>
+						<aura:if isTrue="{!v.close=='true'}">
+							<a onclick="{!c.onClose}" href="#">
+								<c:svgIcon class="slds-input__icon slds-icon-text-default" xlinkHref="/resource/slds_214/icons/utility-sprite/svg/symbols.svg#close" />
+								<span class="slds-assistive-text">Close</span>
+							</a>
+							<aura:set attribute="else">
+								<c:svgIcon class="slds-icon slds-input__icon slds-input__icon_right" xlinkHref="/resource/slds_214/icons/utility-sprite/svg/symbols.svg#search" />
+							</aura:set>
+						</aura:if>
+					</div>
+				</div>
+			</div>
+			<aura:if isTrue="{!v.flag=='true'}">
+				<div class="slds-box" style="padding: 0">
+					<aura:iteration aura:id="iteration" items="{!v.valuelist}" var="obj">
+						<div id="list" style="padding:5px; cursor: pointer" class="recordCard" >
+							<lightning:icon iconName="{!v.icon}" />
+							<p onclick="{!c.getId}" style="display: inline; margin-left: 10px" data-value="{!obj.Name}" data-id="{!obj.Id}">{!obj.Name}</p>
+						</div>
+					</aura:iteration>
+				</div>
+			</aura:if>
+		</aura:set>
+	</aura:if>
+</aura:component>

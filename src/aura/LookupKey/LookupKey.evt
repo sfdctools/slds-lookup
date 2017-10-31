@@ -1,0 +1,4 @@
+<aura:event type="APPLICATION">
+    <aura:attribute name="lookupId" type="String"/>
+    <aura:attribute name="lookupName" type="String"/>
+</aura:event>
