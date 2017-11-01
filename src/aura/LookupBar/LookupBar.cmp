@@ -10,6 +10,7 @@
 	<aura:attribute name="icon" type="String"/>
 	<aura:attribute name="isReq" type="Boolean"/>
 	<aura:attribute name="alert" type="Boolean" default="true"/>
+	<aura:attribute name="label" type="String" default="{!v.fieldval}"/>
 	<aura:registerEvent name="lookupEvent" type="c:LookupKey"/>
 	<aura:registerEvent name="showToast" type="force:showToast"/>
 	<aura:handler name="init" value="{!this}" action="{!c.initialize}"/>
@@ -19,7 +20,7 @@
   		</ui:message>
 		<aura:set attribute="else">
 			<div class="slds-form-element">
-				<label class="slds-form-element__label" for="text-input-id-1">{!v.fieldval}</label>
+				<label class="slds-form-element__label" for="text-input-id-1">{!v.label}</label>
 				<div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_right">
 					<div>
 						<ui:inputText aura:id="txtLookup" class="slds-input" required="{!isReq}" focus="{!c.doInit}"  keyup="{!c.searchKeyChange}" updateOn="keyup"/>
