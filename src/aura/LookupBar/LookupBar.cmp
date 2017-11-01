@@ -1,5 +1,6 @@
-<aura:component controller="LookupSearchController">
+<aura:component controller="LookupBarController">
 	<aura:attribute name="valuelist" type="sObject[]"/>
+	<aura:attribute name="propMap" type="Map"/>
 	<aura:attribute name="objName" type="String"/>
 	<aura:attribute name="fieldval" type="String"/>
 	<aura:attribute name="flag" type="String"/>
@@ -9,12 +10,12 @@
 	<!--aura:attribute name="isOpen" type="Boolean" default="false" /-->
 	<aura:attribute name="icon" type="String"/>
 	<aura:attribute name="isReq" type="Boolean"/>
-	<aura:attribute name="alert" type="Boolean" default="false"/>
+	<aura:attribute name="alert" type="String" default="false"/>
 	<aura:attribute name="label" type="String" default="{!v.fieldval}"/>
 	<aura:registerEvent name="lookupEvent" type="c:LookupKey"/>
 	<aura:registerEvent name="showToast" type="force:showToast"/>
 	<aura:handler name="init" value="{!this}" action="{!c.initialize}"/>
-	<aura:if isTrue="{!v.alert}">
+	<aura:if isTrue="{!v.alert == 'true'}">
 		<ui:message title="Error" severity="error" closable="false">
             Invalid object/field
   		</ui:message>

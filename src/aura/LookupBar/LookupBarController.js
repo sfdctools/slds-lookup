@@ -1,52 +1,46 @@
 ({
     initialize:function(component) {
-      
         var obj = component.get("v.objName")
         var field = component.get("v.fieldval");
+        var searchTxt = component.find("txtLookup").get("v.value");
         console.log("obj ====",obj);
         console.log("field ====",field);
-        var action = component.get("c.checkObjAndField");
+        var action = component.get("c.objFieldPropertyMap");
         action.setParams({
             "objectName" : obj, 
             "fieldName"  : field, 
         });
-        action.setCallback(this, function(a){
-            component.set("v.alert",!a.getReturnValue());
-            console.log("alert===",a.getReturnValue());
-            
-            var action2 = component.get("c.getObjectName");
-            action2.setParams({
-                objName : obj,
-                fieldName: field  
-            });
-            action2.setCallback(this,function(a){
-                component.set("v.objectName",a.getReturnValue());
-                var objectName = component.get("v.objectName");
-                var action3 = component.get("c.checkRequired");
-                action3.setParams({
-                    objectName : obj,
-                    fieldName  : field 
-                });
-                action3.setCallback(this, function(a){
-                    component.set("v.isReq",a.getReturnValue());
-                });
-                $A.enqueueAction(action3);
-            });
-            $A.enqueueAction(action2);
+        action.setCallback(this,function(a){
+            component.set("v.propMap",a.getReturnValue());
+            console.log('propMap ==',a.getReturnValue());
+            var propMap = component.get("v.propMap");
+            console.log("propMap",propMap);
+            if(propMap.Valid == "false"){
+                console.log('valid ====',propMap.Valid);
+                component.set("v.alert","true");
+            }
+            else{
+                var obj = component.set("v.objectName",propMap.objectName);
+                var req = component.set("v.isReq",propMap.Required);
+            }
         });
         $A.enqueueAction(action);
-  
+
+      
     },
     doInit : function(component, event) {
         component.set("v.close","true");
+        var lookupVal = component.find("txtLookup").get("v.value");
         var obj1 = component.get("v.objectName");
         var field1 = component.get("v.fieldval");
-        var action = component.get("c.getAllValueList");
+        var action = component.get("c.findByName");
         console.log('value obj1 ',obj1);
         console.log('value field',field1);
+        console.log('lookupValue ',lookupVal);
         action.setParams({
-            "objectName": obj1,
-            "fieldName" : field1
+            "objName": obj1,
+            "fieldName" : field1,
+            "lookupValue" : lookupVal
         });
         action.setCallback(this, function(a) {
             component.set("v.valuelist", a.getReturnValue());
