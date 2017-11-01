@@ -1,70 +1,56 @@
 ({
     initialize:function(component) {
-		var obj = component.get("v.objName")
+      
+        var obj = component.get("v.objName")
         var field = component.get("v.fieldval");
-       	console.log("obj ====",obj);
-       	console.log("field ====",field);
-       	var action4 = component.get("c.checkObjAndField");
-		action4.setParams({
-      		"objectName" :obj,
-            "fieldName" :field
-       	});
-       	action4.setCallback(this, function(a){
-          	component.set("v.alert",!a.getReturnValue());
-            console.log('alert',a.getReturnValue());
-            /*
-           	if(component.get("v.alert") == false){
-                console.log("alertttt");
-           		var toastEvent = $A.get("e.force:showToast");
-				toastEvent.setParams({
-    				title: "Error!",
-    				message: "Invalid field/object",
-        			type: "error"
-				});
-				toastEvent.fire();
-    	       	return false;
-           	}*/
+        console.log("obj ====",obj);
+        console.log("field ====",field);
+        var action = component.get("c.checkObjAndField");
+        action.setParams({
+            "objectName" : obj, 
+            "fieldName"  : field, 
         });
-        $A.enqueueAction(action4);
-
-        
-       	var obj= component.get("v.objectName");
-        var field= component.get("v.fieldVal");
-        var action2 = component.get("c.getObjectName");
-        action2.setParams({
-            "objName" :obj,
-            "fieldName" :field
+        action.setCallback(this, function(a){
+            component.set("v.alert",!a.getReturnValue());
+            console.log("alert===",a.getReturnValue());
+            
+            var action2 = component.get("c.getObjectName");
+            action2.setParams({
+                objName : obj,
+                fieldName: field  
+            });
+            action2.setCallback(this,function(a){
+                component.set("v.objectName",a.getReturnValue());
+                var objectName = component.get("v.objectName");
+                var action3 = component.get("c.checkRequired");
+                action3.setParams({
+                    objectName : obj,
+                    fieldName  : field 
+                });
+                action3.setCallback(this, function(a){
+                    component.set("v.isReq",a.getReturnValue());
+                });
+                $A.enqueueAction(action3);
+            });
+            $A.enqueueAction(action2);
         });
-        action2.setCallback(this, function(a){
-
-            component.set("v.objectName", a.getReturnValue()); 
-            var action3 = component.get("c.checkRequired");
-       		action3.setParams({
-            	"objectName" :obj,
-            	"fieldName" :field
-        	});
-        	action3.setCallback(this, function(a){
-                console.log('isReq ==',a.getReturnValue());
-            	component.set("v.isReq",a.getReturnValue());
-        	});
-        	$A.enqueueAction(action3);
-        });
-        $A.enqueueAction(action2);
+        $A.enqueueAction(action);
+  
     },
     doInit : function(component, event) {
         component.set("v.close","true");
-       	var obj1 = component.get("v.objectName");
+        var obj1 = component.get("v.objectName");
         var field1 = component.get("v.fieldval");
         var action = component.get("c.getAllValueList");
         console.log('value obj1 ',obj1);
         console.log('value field',field1);
-		action.setParams({
-      		"objectName": obj1,
-           	"fieldName" : field1
-    	});
-		action.setCallback(this, function(a) {
-			component.set("v.valuelist", a.getReturnValue());
-		});
+        action.setParams({
+            "objectName": obj1,
+            "fieldName" : field1
+        });
+        action.setCallback(this, function(a) {
+            component.set("v.valuelist", a.getReturnValue());
+        });
         component.set("v.flag", "true");
         $A.enqueueAction(action);
     },
@@ -78,16 +64,16 @@
         var field = component.get("v.fieldval");
         if(lookupValue && lookupValue.trim().length > 2){
             console.log('lookupValue',lookupValue);
-        	var action = component.get("c.findByName");
-    		action.setParams({
-      			"lookupValue": lookupValue,
+            var action = component.get("c.findByName");
+            action.setParams({
+                "lookupValue": lookupValue,
                 "objName" : sob,
                 "fieldName" : field
-    		});
-    		action.setCallback(this, function(a) {  
-        		component.set("v.valuelist", a.getReturnValue());
-    		});
-    		$A.enqueueAction(action);
+            });
+            action.setCallback(this, function(a) {  
+                component.set("v.valuelist", a.getReturnValue());
+            });
+            $A.enqueueAction(action);
         }  
     },
   
@@ -101,7 +87,7 @@
             "lookupName": event.target.getAttribute("data-value")
         });
         myEvent.fire();
-	},
+    },
    
     onClose : function(component, event){
         component.set("v.close","false");
