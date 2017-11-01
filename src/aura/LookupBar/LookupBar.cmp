@@ -6,10 +6,10 @@
 	<aura:attribute name="objectName" type="String"/>
 	<aura:attribute name="close" type="Boolean" default="false"/>
 	<aura:attribute name="search" type="Boolean" default="true"/>
-	<aura:attribute name="isOpen" type="Boolean" default="false" />
+	<!--aura:attribute name="isOpen" type="Boolean" default="false" /-->
 	<aura:attribute name="icon" type="String"/>
 	<aura:attribute name="isReq" type="Boolean"/>
-	<aura:attribute name="alert" type="Boolean" default="true"/>
+	<aura:attribute name="alert" type="Boolean" default="false"/>
 	<aura:attribute name="label" type="String" default="{!v.fieldval}"/>
 	<aura:registerEvent name="lookupEvent" type="c:LookupKey"/>
 	<aura:registerEvent name="showToast" type="force:showToast"/>

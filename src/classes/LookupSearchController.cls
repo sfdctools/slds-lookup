@@ -4,9 +4,8 @@ public class LookupSearchController {
         System.debug('objectName====='+objectName);
         System.debug('fieldName====='+fieldName);
         List<sObject> returnList = new List<sObject>();
-
-            String query = 'SELECT id,name FROM '+objectName+' Limit 5';
-        	returnList = Database.query(query);
+        String query = 'SELECT id,name FROM '+objectName+' Limit 5';
+        returnList = Database.query(query);
 		return returnList;
     }
     
@@ -14,7 +13,6 @@ public class LookupSearchController {
     public static String getObjectName(String objName,String fieldName){
         objName = objName.toLowerCase();
         fieldName = fieldName.toLowerCase();
-        
         System.debug('objName==='+objName);
         System.debug('fieldName==='+fieldName);
         String obj;
@@ -41,33 +39,25 @@ public class LookupSearchController {
        fieldName = fieldName.toLowerCase();
        System.debug('objectName=='+objectName);
        System.debug('fieldName=='+fieldName);
-        Boolean isRequired = false;
+       Boolean isRequired = false;
        Schema.SObjectType sobj = Schema.getGlobalDescribe().get(objectName);
        Map<String,Schema.SObjectField> fieldsMap = sobj.getDescribe().fields.getMap();
-        Schema.DescribeFieldResult f = sobj.getDescribe().fields.getMap().get(fieldName).getDescribe();
-		isRequired = !f.isNillable();
+       Schema.DescribeFieldResult f = fieldsMap.get(fieldName).getDescribe();
+	   isRequired = !f.isNillable();
         System.debug('isRequired ========='+f.isNillable());
-    	return isRequired;
+        return isRequired;
     }
-    @AuraEnabled
-    public static void relationship(String objectName, String fieldName){
-        Schema.SObjectType sobj = Schema.getGlobalDescribe().get(objectName);
-        Schema.DescribeFieldResult dsr = sobj.getDescribe().fields.getMap().get(fieldName).getDescribe();
-		System.debug('Relationship Name: ' + dsr.getRelationshipOrder());
-        
-    }
+
     @AuraEnabled
     public static Boolean checkObjAndField(String objectName, String fieldName){
         Boolean flag = true;
         objectName = objectName.toLowerCase();
-        fieldName = fieldName.toLowerCase();
-        
+        fieldName = fieldName.toLowerCase(); 
         Schema.SObjectType objType = Schema.getGlobalDescribe().get(objectName);
-        
-        if (objType != null && objType.getDescribe().fields.getMap().containsKey(fieldName)) {
+        Schema.DisplayType fieldType = objType.getDescribe().fields.getMap().get(fieldName).getDescribe().getType();
+        if (objType != null && objType.getDescribe().fields.getMap().containsKey(fieldName) && String.valueOf(fieldType) == 'REFERENCE' ){
             return true;
         }
-        
         return false;
     }   
 }

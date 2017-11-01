@@ -35,9 +35,7 @@
             $A.enqueueAction(action2);
         });
         $A.enqueueAction(action);
-
-
-       
+  
     },
     doInit : function(component, event) {
         component.set("v.close","true");
