@@ -1,52 +1,62 @@
 <aura:component controller="LookupBarController">
-	<aura:attribute name="valuelist" type="sObject[]"/>
-	<aura:attribute name="propMap" type="Map"/>
-	<aura:attribute name="objName" type="String"/>
-	<aura:attribute name="fieldval" type="String"/>
-	<aura:attribute name="flag" type="String"/>
-	<aura:attribute name="objectName" type="String"/>
-	<aura:attribute name="close" type="Boolean" default="false"/>
-	<aura:attribute name="search" type="Boolean" default="true"/>
-	<!--aura:attribute name="isOpen" type="Boolean" default="false" /-->
-	<aura:attribute name="icon" type="String"/>
-	<aura:attribute name="isReq" type="Boolean"/>
-	<aura:attribute name="alert" type="String" default="false"/>
-	<aura:attribute name="label" type="String" default="{!v.fieldval}"/>
+	<!--Attributes to be used-->
+	<aura:attribute name="valuelist" type="sObject[]" default="[]" description="List contains list of all the records"/>
+	<aura:attribute name="propMap" type="Map" description="Map will hold the properties of object and field"/>
+	<aura:attribute name="fieldval" type="String" default="null" description="Attribute holds value of field entered"/>
+	<aura:attribute name="objectName" type="String" default="null" description="attribute holds value of object entered"/>
+	<aura:attribute name="close" type="Boolean" default="false" description="Attribute holds close icon variable"/>
+	<aura:attribute name="search" type="Boolean" default="true" description="Attribute holds search icon variable"/>
+	<aura:attribute name="icon" type="String" default="standard:account" description="Attribute holds value of icon name entered"/>
+	<aura:attribute name="isReq" type="Boolean" default="true" description="If the field is required this attribute returns true"/>
+	<aura:attribute name="alert" type="String" default="false" description="If object/ field are invalid this returns true"/>
+	<aura:attribute name="label" type="String" default="" description="Holds the value of label entered"/>
+	
+	<!-- Event registration for LookupKey event -->
 	<aura:registerEvent name="lookupEvent" type="c:LookupKey"/>
-	<aura:registerEvent name="showToast" type="force:showToast"/>
+	<!-- Method to be executed when the page loads -->
 	<aura:handler name="init" value="{!this}" action="{!c.initialize}"/>
-	<aura:if isTrue="{!v.alert == 'true'}">
-		<ui:message title="Error" severity="error" closable="false">
-            Invalid object/field
+	<div>
+		<!--Alert is shown when the object/field entered is invalid -->
+		<aura:if isTrue="{!v.alert == 'true'}">
+			<ui:message title="Error" severity="error" closable="false">
+            	Invalid object/field
   		</ui:message>
-		<aura:set attribute="else">
-			<div class="slds-form-element">
-				<label class="slds-form-element__label" for="text-input-id-1">{!v.label}</label>
-				<div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_right">
-					<div>
-						<ui:inputText aura:id="txtLookup" class="slds-input" required="{!isReq}" focus="{!c.doInit}"  keyup="{!c.searchKeyChange}" updateOn="keyup"/>
-						<aura:if isTrue="{!v.close=='true'}">
-							<a onclick="{!c.onClose}" href="#">
-								<c:svgIcon class="slds-input__icon slds-icon-text-default" xlinkHref="/resource/slds_214/icons/utility-sprite/svg/symbols.svg#close" />
-								<span class="slds-assistive-text">Close</span>
-							</a>
-							<aura:set attribute="else">
-								<c:svgIcon class="slds-icon slds-input__icon slds-input__icon_right" xlinkHref="/resource/slds_214/icons/utility-sprite/svg/symbols.svg#search" />
-							</aura:set>
-						</aura:if>
+			<!-- If field and object is valid then the bar is shown -->
+			<aura:set attribute="else">
+				<div class="slds-form-element">
+					<!-- If user enters a label as attribute then it is shown otherwise as default the fieldName is shown -->
+					<label class="slds-form-element__label" for="text-input-id-1">{!v.label}</label>
+					<div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_right">
+						<div>
+							<ui:inputText aura:id="txtLookup" class="slds-input" required="{!isReq}" focus="{!c.doInit}"  keyup="{!c.searchKeyChange}" updateOn="keyup"/>
+							<!-- Close icon -->
+							<aura:if isTrue="{!v.close=='true'}">
+								<a onclick="{!c.onClose}" href="#">
+									<c:svgIcon class="slds-input__icon slds-icon-text-default" xlinkHref="/resource/slds_214/utility-sprite/svg/symbols.svg#close" />
+									<span class="slds-assistive-text">Close</span>
+								</a>
+								<aura:set attribute="else">
+								<!-- Search icon -->
+									<c:svgIcon class="slds-icon slds-input__icon slds-input__icon_right" xlinkHref="/resource/slds_214/utility-sprite/svg/symbols.svg#search" />
+								</aura:set>
+							</aura:if>
+						</div>
 					</div>
 				</div>
-			</div>
-			<aura:if isTrue="{!v.flag=='true'}">
-				<div class="slds-box" style="padding: 0">
-					<aura:iteration aura:id="iteration" items="{!v.valuelist}" var="obj">
-						<div id="list" style="padding:5px; cursor: pointer" class="recordCard" >
-							<lightning:icon iconName="{!v.icon}" />
-							<p onclick="{!c.getId}" style="display: inline; margin-left: 10px" data-value="{!obj.Name}" data-id="{!obj.Id}">{!obj.Name}</p>
-						</div>
-					</aura:iteration>
-				</div>
-			</aura:if>
-		</aura:set>
-	</aura:if>
+				<!-- The list is displayed only if the list returns contains items -->
+				<aura:if isTrue="{!v.valuelist.length > 0}">
+					<div class="slds-box">
+						<aura:iteration aura:id="iteration" items="{!v.valuelist}" var="obj">
+							<div class="recordCard" onclick="{!c.getId}" data-value="{!obj.Name}" data-id="{!obj.Id}">
+								<!-- Card icons -->
+								<lightning:icon iconName="{!v.icon}" />
+								<!-- Card items -->
+								<p class="recordValue">{!obj.Name}</p>
+							</div>
+						</aura:iteration>
+					</div>
+				</aura:if>
+			</aura:set>
+		</aura:if>
+	</div>
 </aura:component>

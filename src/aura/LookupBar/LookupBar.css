@@ -1,10 +1,21 @@
 .THIS .inline {
     display: inline !important;
 }
+.THIS .recordCard {
+    padding: 5px; 
+    cursor: pointer;
+}
 .THIS .recordCard:hover {
     background: lightgray;
 }
 .THIS .recordCard > .slds-icon_container .slds-icon {
     height: 1.60rem;
     width: 1.60rem;
+}
+.THIS .recordCard > .recordValue {
+    display: inline; 
+    margin-left: 10px
+}
+.THIS .slds-box{
+    padding: 0;
 }
