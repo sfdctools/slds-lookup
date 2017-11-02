@@ -1,99 +1,97 @@
-({
-    initialize:function(component) {
-		var obj = component.get("v.objName")
-        var field = component.get("v.fieldval");
-       	console.log("obj ====",obj);
-       	console.log("field ====",field);
-       	var action4 = component.get("c.checkObjAndField");
-		action4.setParams({
-      		"objectName" :obj,
-            "fieldName" :field
-       	});
-       	action4.setCallback(this, function(a){
-          	component.set("v.alert",!a.getReturnValue());
-            console.log('alert',a.getReturnValue());
-            /*
-           	if(component.get("v.alert") == false){
-                console.log("alertttt");
-           		var toastEvent = $A.get("e.force:showToast");
-				toastEvent.setParams({
-    				title: "Error!",
-    				message: "Invalid field/object",
-        			type: "error"
-				});
-				toastEvent.fire();
-    	       	return false;
-           	}*/
+({  
+    // Function will execute each time the page is loaded
+    // This method will set the properties in the properties map
+    initialize:function(component, event, helper) {
+        var action = component.get("c.objFieldPropertyMap");
+        action.setParams({
+            "objectName" : helper.getHelper(component,"v.objectName"), 
+             "fieldName" : helper.getHelper(component,"v.fieldval"), 
         });
-        $A.enqueueAction(action4);
-
-        
-       	var obj= component.get("v.objectName");
-        var field= component.get("v.fieldVal");
-        var action2 = component.get("c.getObjectName");
-        action2.setParams({
-            "objName" :obj,
-            "fieldName" :field
+        action.setCallback(this,function(a){
+            if(a.getState() == "SUCCESS"){
+                helper.setHelper(component, "v.propMap", a.getReturnValue()); 
+                var propMap = helper.getHelper(component,"v.propMap");
+                if (propMap.Valid == "false") {
+                    helper.setHelper(component,"v.alert","true");
+                } else {
+                    var req = helper.setHelper(component,"v.isReq",propMap.Required);
+                    if (helper.getHelper(component,"v.label")=='') {
+                        helper.setHelper(component,"v.label",propMap.fieldLabel);
+                    }
+                    var obj = helper.setHelper(component,"v.objectName",propMap.objectName);
+                }
+            } else {
+                alert("From server: " + a.getReturnValue());
+            }
+            
         });
-        action2.setCallback(this, function(a){
-
-            component.set("v.objectName", a.getReturnValue()); 
-            var action3 = component.get("c.checkRequired");
-       		action3.setParams({
-            	"objectName" :obj,
-            	"fieldName" :field
-        	});
-        	action3.setCallback(this, function(a){
-                console.log('isReq ==',a.getReturnValue());
-            	component.set("v.isReq",a.getReturnValue());
-        	});
-        	$A.enqueueAction(action3);
-        });
-        $A.enqueueAction(action2);
-    },
-    doInit : function(component, event) {
-        component.set("v.close","true");
-       	var obj1 = component.get("v.objectName");
-        var field1 = component.get("v.fieldval");
-        var action = component.get("c.getAllValueList");
-        console.log('value obj1 ',obj1);
-        console.log('value field',field1);
-		action.setParams({
-      		"objectName": obj1,
-           	"fieldName" : field1
-    	});
-		action.setCallback(this, function(a) {
-			component.set("v.valuelist", a.getReturnValue());
-		});
-        component.set("v.flag", "true");
         $A.enqueueAction(action);
     },
-    flagValue : function(component, event) {
-        component.set("v.flag","false");
+
+    // This function will load the initial values for the list.
+    doInit : function(component, event, helper) {
+        helper.setHelper(component,"v.close","true");
+        var lookupVal = component.find("txtLookup").get("v.value");
+        var obj1 = helper.getHelper(component,"v.objectName");
+        var field1 = helper.getHelper(component,"v.fieldval");
+        var action = helper.getHelper(component,"c.findByName");
+        action.setParams({
+                "objName" : obj1.toLowerCase(),
+              "fieldName" : field1.toLowerCase(),
+            "lookupValue" : lookupVal
+        });
+        action.setCallback(this, function(a) {
+            if (a.getState() == "SUCCESS") {
+                var values = helper.setHelper(component,"v.valuelist", a.getReturnValue());  
+                if (values.length > 5) {
+                    console.log('length');
+                    $A.util.addClass(component.find("card"), 'divSize');
+                } else {
+                    $A.util.removeClass(component.find("card"), 'divSize');
+                }  
+            }
+            else{
+                alert("From server: " + a.getReturnValue());
+            }
+            
+        });
+        $A.enqueueAction(action);
     },
-    
+
+    // The method loads the list as per the search key entered by the user
     searchKeyChange: function(component, event, helper) {
         var lookupValue = component.find("txtLookup").get("v.value");
-        var sob = component.get("v.objectName"); 
-        var field = component.get("v.fieldval");
-        if(lookupValue && lookupValue.trim().length > 2){
-            console.log('lookupValue',lookupValue);
-        	var action = component.get("c.findByName");
-    		action.setParams({
-      			"lookupValue": lookupValue,
-                "objName" : sob,
-                "fieldName" : field
-    		});
-    		action.setCallback(this, function(a) {  
-        		component.set("v.valuelist", a.getReturnValue());
-    		});
-    		$A.enqueueAction(action);
+        var sob = helper.getHelper(component,"v.objectName"); 
+        var field = helper.getHelper(component,"v.fieldval");
+        if (lookupValue && lookupValue.trim().length > 2) {
+            var action = helper.getHelper(component,"c.findByName");
+            action.setParams({
+                "lookupValue" : lookupValue,
+                    "objName" : sob,
+                  "fieldName" : field
+            });
+            action.setCallback(this, function(a) { 
+                if (a.getState() == "SUCCESS") {
+                    var values = helper.setHelper(component,"v.valuelist", a.getReturnValue());
+                    console.log('values');
+                    if (values.length > 5) {
+                        console.log('length');
+                        $A.util.addClass(component.find("card"), 'divSize');
+                    } else {
+                        $A.util.removeClass(component.find("card"), 'divSize');
+                    }    
+                } else{
+                    alert("From server: " + a.getReturnValue());
+                }   
+            });
+            $A.enqueueAction(action);
         }  
     },
-  
-    getId: function(component, event){
-        component.set("v.close","true");
-        component.set("v.flag","false");
+
+    // Method sets the values in the look-up field and set the ID and name of the selected element 
+    getId: function(component, event, helper){
+        helper.setHelper(component,"v.close","true");
+        helper.setHelper(component,"v.valuelist",[]);
         component.find("txtLookup").set("v.value",event.target.getAttribute("data-value"));
         var myEvent = $A.get("e.c:LookupKey");
         myEvent.setParams({
@@ -101,11 +99,12 @@
             "lookupName": event.target.getAttribute("data-value")
         });
         myEvent.fire();
-	},
-   
-    onClose : function(component, event){
-        component.set("v.close","false");
+    },
+
+    // For the function of close
+    onClose : function(component, event, helper){
+        helper.setHelper(component,"v.close","false");
         component.find("txtLookup").set("v.value",'');
-        component.set("v.flag","false");
+        helper.setHelper(component,"v.valuelist",[]);
     }
 })
