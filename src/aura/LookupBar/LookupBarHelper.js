@@ -6,7 +6,8 @@
 
     // Helper method for setting the values to the  page
     setHelper : function(component, prop, retVal){
-        return component.set(prop, retVal);
+        component.set(prop, retVal);
+        return retVal;
     }
     
 })

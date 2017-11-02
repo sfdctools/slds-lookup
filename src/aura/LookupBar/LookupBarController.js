@@ -11,18 +11,16 @@
             if(a.getState() == "SUCCESS"){
                 helper.setHelper(component, "v.propMap", a.getReturnValue()); 
                 var propMap = helper.getHelper(component,"v.propMap");
-                if(propMap.Valid == "false"){
+                if (propMap.Valid == "false") {
                     helper.setHelper(component,"v.alert","true");
-                }
-                else{
+                } else {
                     var req = helper.setHelper(component,"v.isReq",propMap.Required);
-                    if(helper.getHelper(component,"v.label")==''){
+                    if (helper.getHelper(component,"v.label")=='') {
                         helper.setHelper(component,"v.label",propMap.fieldLabel);
                     }
                     var obj = helper.setHelper(component,"v.objectName",propMap.objectName);
                 }
-            }
-            else{
+            } else {
                 alert("From server: " + a.getReturnValue());
             }
             
@@ -43,8 +41,14 @@
             "lookupValue" : lookupVal
         });
         action.setCallback(this, function(a) {
-            if(a.getState() == "SUCCESS"){
-                helper.setHelper(component,"v.valuelist", a.getReturnValue());    
+            if (a.getState() == "SUCCESS") {
+                var values = helper.setHelper(component,"v.valuelist", a.getReturnValue());  
+                if (values.length > 5) {
+                    console.log('length');
+                    $A.util.addClass(component.find("card"), 'divSize');
+                } else {
+                    $A.util.removeClass(component.find("card"), 'divSize');
+                }  
             }
             else{
                 alert("From server: " + a.getReturnValue());
@@ -59,7 +63,7 @@
         var lookupValue = component.find("txtLookup").get("v.value");
         var sob = helper.getHelper(component,"v.objectName"); 
         var field = helper.getHelper(component,"v.fieldval");
-        if(lookupValue && lookupValue.trim().length > 2){
+        if (lookupValue && lookupValue.trim().length > 2) {
             var action = helper.getHelper(component,"c.findByName");
             action.setParams({
                 "lookupValue" : lookupValue,
@@ -67,10 +71,16 @@
                   "fieldName" : field
             });
             action.setCallback(this, function(a) { 
-                if(a.getState() == "SUCCESS"){
-                    helper.setHelper(component,"v.valuelist", a.getReturnValue());    
-                } 
-                else{
+                if (a.getState() == "SUCCESS") {
+                    var values = helper.setHelper(component,"v.valuelist", a.getReturnValue());
+                    console.log('values');
+                    if (values.length > 5) {
+                        console.log('length');
+                        $A.util.addClass(component.find("card"), 'divSize');
+                    } else {
+                        $A.util.removeClass(component.find("card"), 'divSize');
+                    }    
+                } else{
                     alert("From server: " + a.getReturnValue());
                 }   
             });

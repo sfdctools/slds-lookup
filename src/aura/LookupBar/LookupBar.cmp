@@ -45,7 +45,7 @@
 				</div>
 				<!-- The list is displayed only if the list returns contains items -->
 				<aura:if isTrue="{!v.valuelist.length > 0}">
-					<div class="slds-box">
+					<div class="slds-box" aura:id="card">
 						<aura:iteration aura:id="iteration" items="{!v.valuelist}" var="obj">
 							<div class="recordCard" onclick="{!c.getId}" data-value="{!obj.Name}" data-id="{!obj.Id}">
 								<!-- Card icons -->
