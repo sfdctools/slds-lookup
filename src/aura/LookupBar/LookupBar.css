@@ -19,7 +19,7 @@
 .THIS .slds-box{
     padding: 0;
 }
-.THIS .divSize{
+.THIS .FixDivSize{
     height: 185px;
     overflow-y: auto;
 }

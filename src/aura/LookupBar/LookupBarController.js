@@ -1,40 +1,54 @@
+/** JS class that contains all the utility methods for the component
+* 
+* @author       E. Jayaraman Iyer (https://github.com/jayaramaniyer150895)
+* @version      1.0b
+*/
+
 ({  
-    // Function will execute each time the page is loaded
-    // This method will set the properties in the properties map
+    /*
+    * Function will execute each time the page is loaded
+    * This method will set the properties in the properties map
+    * @param      {Object}    component     {Component to get and set values}
+    * @param      {Object}    event         {Holds event}
+    * @param      {Object}    helper        {Helper class}      
+    */
     initialize:function(component, event, helper) {
-        var action = component.get("c.objFieldPropertyMap");
+        var action = component.get("c.populatePropertyMap");
         action.setParams({
-            "objectName" : helper.getHelper(component,"v.objectName"), 
-             "fieldName" : helper.getHelper(component,"v.fieldval"), 
+            "objectName" : helper.getValue(component,"v.objectName"), 
+             "fieldName" : helper.getValue(component,"v.fieldVal"), 
         });
         action.setCallback(this,function(a){
             if(a.getState() == "SUCCESS"){
-                helper.setHelper(component, "v.propMap", a.getReturnValue()); 
-                var propMap = helper.getHelper(component,"v.propMap");
+                helper.setValue(component, "v.propMap", a.getReturnValue()); 
+                var propMap = helper.getValue(component,"v.propMap");
                 if (propMap.Valid == "false") {
-                    helper.setHelper(component,"v.alert","true");
+                    helper.setValue(component,"v.alert","true");
                 } else {
-                    var req = helper.setHelper(component,"v.isReq",propMap.Required);
-                    if (helper.getHelper(component,"v.label")=='') {
-                        helper.setHelper(component,"v.label",propMap.fieldLabel);
-                    }
-                    var obj = helper.setHelper(component,"v.objectName",propMap.objectName);
+                    helper.setValue(component,"v.isReq",propMap.Required);
+                    component.get("v.label") || helper.setValue(component,"v.label",propMap.fieldLabel);
+                    helper.setValue(component,"v.objectName",propMap.objectName);
                 }
             } else {
-                alert("From server: " + a.getReturnValue());
+                console.error(a.getError()[0].message);
             }
             
         });
         $A.enqueueAction(action);
     },
 
-    // This function will load the initial values for the list.
-    doInit : function(component, event, helper) {
-        helper.setHelper(component,"v.close","true");
+    /*
+    * This function will load the initial values for the list.
+    * @param      {Object}    component     {Component to get and set values}
+    * @param      {Object}    event         {Holds event}
+    * @param      {Object}    helper        {Helper class}      
+    */
+    fetchList : function(component, event, helper) {
+        helper.setValue(component,"v.close","true");
         var lookupVal = component.find("txtLookup").get("v.value");
-        var obj1 = helper.getHelper(component,"v.objectName");
-        var field1 = helper.getHelper(component,"v.fieldval");
-        var action = helper.getHelper(component,"c.findByName");
+        var obj1 = helper.getValue(component,"v.objectName");
+        var field1 = helper.getValue(component,"v.fieldVal");
+        var action = helper.getValue(component,"c.findByName");
         action.setParams({
                 "objName" : obj1.toLowerCase(),
               "fieldName" : field1.toLowerCase(),
@@ -42,69 +56,47 @@
         });
         action.setCallback(this, function(a) {
             if (a.getState() == "SUCCESS") {
-                var values = helper.setHelper(component,"v.valuelist", a.getReturnValue());  
+                var values = helper.setValue(component,"v.valuelist", a.getReturnValue());  
                 if (values.length > 5) {
-                    console.log('length');
-                    $A.util.addClass(component.find("card"), 'divSize');
+                    $A.util.addClass(component.find("card"), 'FixDivSize');
                 } else {
-                    $A.util.removeClass(component.find("card"), 'divSize');
+                    $A.util.removeClass(component.find("card"), 'FixDivSize');
                 }  
-            }
-            else{
-                alert("From server: " + a.getReturnValue());
+            } else {
+                console.error(a.getError()[0].message);
             }
             
         });
         $A.enqueueAction(action);
     },
 
-    // The method loads the list as per the search key entered by the user
-    searchKeyChange: function(component, event, helper) {
-        var lookupValue = component.find("txtLookup").get("v.value");
-        var sob = helper.getHelper(component,"v.objectName"); 
-        var field = helper.getHelper(component,"v.fieldval");
-        if (lookupValue && lookupValue.trim().length > 2) {
-            var action = helper.getHelper(component,"c.findByName");
-            action.setParams({
-                "lookupValue" : lookupValue,
-                    "objName" : sob,
-                  "fieldName" : field
-            });
-            action.setCallback(this, function(a) { 
-                if (a.getState() == "SUCCESS") {
-                    var values = helper.setHelper(component,"v.valuelist", a.getReturnValue());
-                    console.log('values');
-                    if (values.length > 5) {
-                        console.log('length');
-                        $A.util.addClass(component.find("card"), 'divSize');
-                    } else {
-                        $A.util.removeClass(component.find("card"), 'divSize');
-                    }    
-                } else{
-                    alert("From server: " + a.getReturnValue());
-                }   
-            });
-            $A.enqueueAction(action);
-        }  
-    },
-
-    // Method sets the values in the look-up field and set the ID and name of the selected element 
-    getId: function(component, event, helper){
-        helper.setHelper(component,"v.close","true");
-        helper.setHelper(component,"v.valuelist",[]);
+    /* 
+    * Method sets the values in the look-up field and set the ID and name of the selected element 
+    * @param      {Object}    component     {Component to get and set values}
+    * @param      {Object}    event         {Holds event}
+    * @param      {Object}    helper        {Helper class}      
+    */
+    setValuesToField: function(component, event, helper){
+        helper.setValue(component,"v.close","true");
+        helper.setValue(component,"v.valuelist",[]);
         component.find("txtLookup").set("v.value",event.target.getAttribute("data-value"));
-        var myEvent = $A.get("e.c:LookupKey");
+        var myEvent = $A.get("e.c:LookupDataUpdateEvent");
         myEvent.setParams({
-            "lookupId": event.target.getAttribute("data-id"), 
-            "lookupName": event.target.getAttribute("data-value")
+              "lookupId"  :  event.target.getAttribute("data-id"), 
+            "lookupName"  :  event.target.getAttribute("data-value")
         });
         myEvent.fire();
     },
 
-    // For the function of close
+    /* 
+    * Method for hiding the div
+    * @param      {Object}    component     {Component to get and set values}
+    * @param      {Object}    event         {Holds event}
+    * @param      {Object}    helper        {Helper class}      
+    */
     onClose : function(component, event, helper){
-        helper.setHelper(component,"v.close","false");
+        helper.setValue(component,"v.close","false");
         component.find("txtLookup").set("v.value",'');
-        helper.setHelper(component,"v.valuelist",[]);
+        helper.setValue(component,"v.valuelist",[]);
     }
 })

@@ -1,51 +1,65 @@
+/** Controller class which will fetch data from org, to be used in LookupBar Component
+* 
+* @author       E. Jayaraman Iyer (https://github.com/jayaramaniyer150895)
+* @version      1.0b
+*/
+
 public class LookupBarController{
     public static final Map<String, Schema.SObjectType> GLOBALDESCRIBE = Schema.getGlobalDescribe();
-    // Method to get the object values from org
+    public static final String VALID = 'Valid';
+    public static final String TRUEE = 'true';
+    public static final String FALSEE = 'false';
+    public static final String OBJECT_NAME = 'objectName';
+    public static final String REQUIRED = 'Required';
+    public static final String FIELD_LABEL = 'fieldLabel';
+
+    /* 
+    * Method to get the object values from org
+    * @param      {String}    lookupValue     {Holds value of the entered text by user}
+    * @param      {String}    objName         {Holds value of the Object}
+    * @param      {String}    fieldName       {Holds value of the Field }
+    */
     @AuraEnabled
     public static List<sObject> findByName(String lookupValue, String objName, String fieldName) {
-        List<sObject> returnList;
-        String query ;
-        if (String.isBlank(lookupValue)) {
-            query =  ' SELECT Id,name'
-                   + '   FROM '+objName
-                   + '  Limit 5';
-            returnList = Database.query(query);
-            return returnList;   
-        } else {
+        String query =  ' SELECT Id,name'
+                   + '   FROM '+objName;
+        if (String.isNotBlank(lookupValue)) {
             String name = '%' + lookupValue + '%';
-            query =  'SELECT Name'
-                    +'  FROM '+objName
-                    +' WHERE Name LIKE \'%' + lookupValue + '%\'';
-            returnList = Database.query(query);
-            return returnList;      
-        }
+            query +=' WHERE Name LIKE \'%' + lookupValue + '%\''; 
+        } 
+        query += String.isNotBlank(lookupValue) ? ' LIMIT 50' : ' LIMIT 5';
+        return Database.query(query);
     }
 
-    // Method to set the property map for the given object and field by user
-    // This method is also used to check if the values entered bty the user is valid or not
+    /* Method to set the property map for the given object and field by user
+    * This method is also used to check if the values entered bty the user is valid or not
+    * @param      {String}    objectName      {Holds value of the entered Object}
+    * @param      {String}    fieldName       {Holds value of the entered field}
+    */
     @AuraEnabled
-    public static Map<String,String> objFieldPropertyMap(String objectName, String fieldName){
+    public static Map<String,String> populatePropertyMap(String objectName, String fieldName) {
         Map<String, String> propertyMap = new Map<String, String>();
         Schema.SObjectType objType = GLOBALDESCRIBE.get(objectName);
-        if (objType != null && objType.getDescribe().fields.getMap().containsKey(fieldName) ){
-            propertyMap.put('Valid', 'true');
+        if (objType != null && objType.getDescribe().fields.getMap().containsKey(fieldName)) {
+            propertyMap.put(VALID, TRUEE);
             Map<String,Schema.SObjectField> fieldsMap = objType.getDescribe().fields.getMap();
             Schema.DisplayType fieldType = fieldsMap.get(fieldName).getDescribe().getType();
-            Schema.DescribeFieldResult fieldResult= fieldsMap.get(fieldName).getDescribe();
-            String field =  fieldsMap.get(fieldName).getDescribe().getLabel();
-            if ( String.valueOf(fieldType) != 'REFERENCE'){
-                propertyMap.put('Valid', 'false');
+            Schema.DescribeFieldResult fieldDescribe = fieldsMap.get(fieldName).getDescribe();
+            String field =  fieldDescribe.getLabel();
+            if ( fieldType != Schema.DisplayType.REFERENCE ){
+                propertyMap.put(VALID, FALSEE);
             } else{
-                for(Schema.SObjectType reference : fieldResult.getReferenceTo()) {
-                    propertyMap.put('objectName', reference.getDescribe().getName());
+                for(Schema.SObjectType reference : fieldDescribe.getReferenceTo()) {
+                    propertyMap.put(OBJECT_NAME, reference.getDescribe().getName());
+                    break;
                 }
                 Schema.DescribeFieldResult dfs = fieldsMap.get(fieldName).getDescribe();
-                propertyMap.put('Required', String.valueOf(!dfs.isNillable()));
-                propertyMap.put('fieldLabel', field);
+                propertyMap.put(REQUIRED, String.valueOf(!dfs.isNillable()));
+                propertyMap.put(FIELD_LABEL, field);
             }  
         } else {
-            propertyMap.put('Valid', 'false');
+            propertyMap.put(VALID, FALSEE);
         }
         return propertyMap;
-    }   
+    }
 }
