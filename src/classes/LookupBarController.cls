@@ -7,8 +7,8 @@
 public class LookupBarController{
     public static final Map<String, Schema.SObjectType> GLOBALDESCRIBE = Schema.getGlobalDescribe();
     public static final String VALID = 'Valid';
-    public static final String TRUEE = 'true';
-    public static final String FALSEE = 'false';
+    public static final String VALUE_TRUE = 'true';
+    public static final String VALUE_FALSE = 'false';
     public static final String OBJECT_NAME = 'objectName';
     public static final String REQUIRED = 'Required';
     public static final String FIELD_LABEL = 'fieldLabel';
@@ -21,11 +21,11 @@ public class LookupBarController{
     */
     @AuraEnabled
     public static List<sObject> findByName(String lookupValue, String objName, String fieldName) {
-        String query =  ' SELECT Id,name'
-                   + '   FROM '+objName;
+        String query = '' + 'SELECT Id' +
+                       '' + '     , Name' +
+                       '' + '  FROM ' + objName;
         if (String.isNotBlank(lookupValue)) {
-            String name = '%' + lookupValue + '%';
-            query +=' WHERE Name LIKE \'%' + lookupValue + '%\''; 
+            query += ' WHERE Name LIKE \'%' + lookupValue + '%\''; 
         } 
         query += String.isNotBlank(lookupValue) ? ' LIMIT 50' : ' LIMIT 5';
         return Database.query(query);
@@ -41,13 +41,13 @@ public class LookupBarController{
         Map<String, String> propertyMap = new Map<String, String>();
         Schema.SObjectType objType = GLOBALDESCRIBE.get(objectName);
         if (objType != null && objType.getDescribe().fields.getMap().containsKey(fieldName)) {
-            propertyMap.put(VALID, TRUEE);
+            propertyMap.put(VALID, VALUE_TRUE);
             Map<String,Schema.SObjectField> fieldsMap = objType.getDescribe().fields.getMap();
             Schema.DisplayType fieldType = fieldsMap.get(fieldName).getDescribe().getType();
             Schema.DescribeFieldResult fieldDescribe = fieldsMap.get(fieldName).getDescribe();
             String field =  fieldDescribe.getLabel();
             if ( fieldType != Schema.DisplayType.REFERENCE ){
-                propertyMap.put(VALID, FALSEE);
+                propertyMap.put(VALID, VALUE_FALSE);
             } else{
                 for(Schema.SObjectType reference : fieldDescribe.getReferenceTo()) {
                     propertyMap.put(OBJECT_NAME, reference.getDescribe().getName());
@@ -58,7 +58,7 @@ public class LookupBarController{
                 propertyMap.put(FIELD_LABEL, field);
             }  
         } else {
-            propertyMap.put(VALID, FALSEE);
+            propertyMap.put(VALID, VALUE_FALSE);
         }
         return propertyMap;
     }
