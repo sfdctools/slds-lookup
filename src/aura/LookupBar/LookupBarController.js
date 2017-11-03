@@ -1,111 +1,102 @@
-({
-    initialize:function(component) {
-		var obj = component.get("v.objName")
-        var field = component.get("v.fieldval");
-       	console.log("obj ====",obj);
-       	console.log("field ====",field);
-       	var action4 = component.get("c.checkObjAndField");
-		action4.setParams({
-      		"objectName" :obj,
-            "fieldName" :field
-       	});
-       	action4.setCallback(this, function(a){
-          	component.set("v.alert",!a.getReturnValue());
-            console.log('alert',a.getReturnValue());
-            /*
-           	if(component.get("v.alert") == false){
-                console.log("alertttt");
-           		var toastEvent = $A.get("e.force:showToast");
-				toastEvent.setParams({
-    				title: "Error!",
-    				message: "Invalid field/object",
-        			type: "error"
-				});
-				toastEvent.fire();
-    	       	return false;
-           	}*/
-        });
-        $A.enqueueAction(action4);
+/** JS class that contains all the utility methods for the component
+* 
+* @author       E. Jayaraman Iyer (https://github.com/jayaramaniyer150895)
+* @version      1.0b
+*/
 
-        
-       	var obj= component.get("v.objectName");
-        var field= component.get("v.fieldVal");
-        var action2 = component.get("c.getObjectName");
-        action2.setParams({
-            "objName" :obj,
-            "fieldName" :field
+({  
+    /*
+    * Function will execute each time the page is loaded
+    * This method will set the properties in the properties map
+    * @param      {Object}    component     {Component to get and set values}
+    * @param      {Object}    event         {Holds event}
+    * @param      {Object}    helper        {Helper class}      
+    */
+    initialize:function(component, event, helper) {
+        var action = component.get("c.populatePropertyMap");
+        action.setParams({
+            "objectName" : helper.getValue(component,"v.objectName"), 
+             "fieldName" : helper.getValue(component,"v.fieldVal"), 
         });
-        action2.setCallback(this, function(a){
-
-            component.set("v.objectName", a.getReturnValue()); 
-            var action3 = component.get("c.checkRequired");
-       		action3.setParams({
-            	"objectName" :obj,
-            	"fieldName" :field
-        	});
-        	action3.setCallback(this, function(a){
-                console.log('isReq ==',a.getReturnValue());
-            	component.set("v.isReq",a.getReturnValue());
-        	});
-        	$A.enqueueAction(action3);
+        action.setCallback(this,function(a){
+            if(a.getState() == "SUCCESS"){
+                helper.setValue(component, "v.propMap", a.getReturnValue()); 
+                var propMap = helper.getValue(component,"v.propMap");
+                if (propMap.Valid == "false") {
+                    helper.setValue(component,"v.alert","true");
+                } else {
+                    helper.setValue(component,"v.isReq",propMap.Required);
+                    component.get("v.label") || helper.setValue(component,"v.label",propMap.fieldLabel);
+                    helper.setValue(component,"v.objectName",propMap.objectName);
+                }
+            } else {
+                console.error(a.getError()[0].message);
+            }
+            
         });
-        $A.enqueueAction(action2);
-    },
-    doInit : function(component, event) {
-        component.set("v.close","true");
-       	var obj1 = component.get("v.objectName");
-        var field1 = component.get("v.fieldval");
-        var action = component.get("c.getAllValueList");
-        console.log('value obj1 ',obj1);
-        console.log('value field',field1);
-		action.setParams({
-      		"objectName": obj1,
-           	"fieldName" : field1
-    	});
-		action.setCallback(this, function(a) {
-			component.set("v.valuelist", a.getReturnValue());
-		});
-        component.set("v.flag", "true");
         $A.enqueueAction(action);
     },
-    flagValue : function(component, event) {
-        component.set("v.flag","false");
+
+    /*
+    * This function will load the initial values for the list.
+    * @param      {Object}    component     {Component to get and set values}
+    * @param      {Object}    event         {Holds event}
+    * @param      {Object}    helper        {Helper class}      
+    */
+    fetchList : function(component, event, helper) {
+        helper.setValue(component,"v.close","true");
+        var lookupVal = component.find("txtLookup").get("v.value");
+        var obj1 = helper.getValue(component,"v.objectName");
+        var field1 = helper.getValue(component,"v.fieldVal");
+        var action = helper.getValue(component,"c.findByName");
+        action.setParams({
+                "objName" : obj1.toLowerCase(),
+              "fieldName" : field1.toLowerCase(),
+            "lookupValue" : lookupVal
+        });
+        action.setCallback(this, function(a) {
+            if (a.getState() == "SUCCESS") {
+                var values = helper.setValue(component,"v.valuelist", a.getReturnValue());  
+                if (values.length > 5) {
+                    $A.util.addClass(component.find("card"), 'FixDivSize');
+                } else {
+                    $A.util.removeClass(component.find("card"), 'FixDivSize');
+                }  
+            } else {
+                console.error(a.getError()[0].message);
+            }
+            
+        });
+        $A.enqueueAction(action);
     },
-    
-    searchKeyChange: function(component, event, helper) {
-        var lookupValue = component.find("txtLookup").get("v.value");
-        var sob = component.get("v.objectName"); 
-        var field = component.get("v.fieldval");
-        if(lookupValue && lookupValue.trim().length > 2){
-            console.log('lookupValue',lookupValue);
-        	var action = component.get("c.findByName");
-    		action.setParams({
-      			"lookupValue": lookupValue,
-                "objName" : sob,
-                "fieldName" : field
-    		});
-    		action.setCallback(this, function(a) {  
-        		component.set("v.valuelist", a.getReturnValue());
-    		});
-    		$A.enqueueAction(action);
-        }  
-    },
-  
-    getId: function(component, event){
-        component.set("v.close","true");
-        component.set("v.flag","false");
+
+    /* 
+    * Method sets the values in the look-up field and set the ID and name of the selected element 
+    * @param      {Object}    component     {Component to get and set values}
+    * @param      {Object}    event         {Holds event}
+    * @param      {Object}    helper        {Helper class}      
+    */
+    setValuesToField: function(component, event, helper){
+        helper.setValue(component,"v.close","true");
+        helper.setValue(component,"v.valuelist",[]);
         component.find("txtLookup").set("v.value",event.target.getAttribute("data-value"));
-        var myEvent = $A.get("e.c:LookupKey");
+        var myEvent = $A.get("e.c:LookupDataUpdateEvent");
         myEvent.setParams({
-            "lookupId": event.target.getAttribute("data-id"), 
-            "lookupName": event.target.getAttribute("data-value")
+              "lookupId"  :  event.target.getAttribute("data-id"), 
+            "lookupName"  :  event.target.getAttribute("data-value")
         });
         myEvent.fire();
-	},
-   
-    onClose : function(component, event){
-        component.set("v.close","false");
+    },
+
+    /* 
+    * Method for hiding the div
+    * @param      {Object}    component     {Component to get and set values}
+    * @param      {Object}    event         {Holds event}
+    * @param      {Object}    helper        {Helper class}      
+    */
+    onClose : function(component, event, helper){
+        helper.setValue(component,"v.close","false");
         component.find("txtLookup").set("v.value",'');
-        component.set("v.flag","false");
+        helper.setValue(component,"v.valuelist",[]);
     }
 })
