@@ -15,16 +15,14 @@
     initialize:function(component, event, helper) {
         var action = component.get("c.populatePropertyMap");
         action.setParams({
-            "objectName" : helper.getValue(component,"v.objectName"), 
-             "fieldName" : helper.getValue(component,"v.fieldVal"), 
+            "objectName" : helper.getValue(component,"v.objectName").toLowerCase(), 
+             "fieldName" : helper.getValue(component,"v.fieldVal").toLowerCase(), 
         });
         action.setCallback(this,function(a){
             if(a.getState() == "SUCCESS"){
                 helper.setValue(component, "v.propMap", a.getReturnValue()); 
                 var propMap = helper.getValue(component,"v.propMap");
-                if (propMap.Valid == "false") {
-                    helper.setValue(component,"v.alert","true");
-                } else {
+                if (propMap.Valid == "true") {
                     helper.setValue(component,"v.isReq",propMap.Required);
                     component.get("v.label") || helper.setValue(component,"v.label",propMap.fieldLabel);
                     helper.setValue(component,"v.objectName",propMap.objectName);
