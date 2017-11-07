@@ -30,7 +30,7 @@ The following code demonstrates the code that would integrate the slds-lookup co
 Attribute Name | Required? | Details | Default Value
 ------------ | ------------- | ------------ | -------------
 ``` objName ``` | Yes | API Name of the object on which the lookup field exists |
-``` fieldName ``` | Yes | API Name of the lookup field to be displayed |
+``` fieldVal ``` | Yes | API Name of the lookup field to be displayed |
 ``` icon ``` | No | Name of the icon to be displayed for the lookup results. The naming convention is similar to the one followed by the [```<lightning:icon>```](https://developer.salesforce.com/docs/atlas.en-us.lightning.meta/lightning/aura_compref_lightning_icon.htm) component. If not specified, no icon would be displayed |
 ``` label ``` | No | If specified, the label provided as an attribute will be displayed as a label to the lookup. Else, the label set in Salesforce would be used | Field label from Salesforce
 | ``` applyFilters ``` | No | **Coming Soon!** Boolean value that justifies whether the lookup filters should be applied to the search results or not | false
