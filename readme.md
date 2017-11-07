@@ -13,18 +13,17 @@ slds-lookup is a native Salesforce.com component, completely native and develope
 
 ### Installation
 To use the slds-lookup component in your existing lightning components, either of the two approaches can be followed -
-- Install the [unmanaged package](link) and follow the sample code to include the slds-lookup component
+- Install the [unmanaged package **beta**](https://login.salesforce.com/packaging/installPackage.apexp?p0=04t7F000002CgXR) and follow the sample code to include the slds-lookup component
 - [Download the source code]() and create new components with the same name in your org directly.
 If using an IDE, paste the downloaded files in your ``` src ``` folder. Once done, deploy the code to server and follow the sample code instructions to include the slds-lookup component
 
 ### Sample Code
 The following code demonstrates the code that would integrate the slds-lookup component in your existing lightning components
 ```html
-<c:slds-lookup objName="Employee__c"
-    fieldName="Project__c"
+<c:LookupBar objName="Employee__c"
+    fieldVal="Project__c"
     icon="standard:entity_milestone"
-    label="Related Project"
-    applyFilters="true" />
+    label="Related Project"/>
 ```
 ##### Attribute usage
 
@@ -37,4 +36,5 @@ Attribute Name | Required? | Details | Default Value
 | ``` applyFilters ``` | No | **Coming Soon!** Boolean value that justifies whether the lookup filters should be applied to the search results or not | false
 
 ### Known Issues & Limitations
-Still working on it!
+* Error alert is shown on initial load even though the object name and field name is valid
+* The field list doesn’t disappear on focus out, use times icon for hiding list
