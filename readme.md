@@ -16,11 +16,12 @@ To use the slds-lookup component in your existing lightning components, either o
 - Install the [unmanaged package **beta**](https://login.salesforce.com/packaging/installPackage.apexp?p0=04t7F000002CgXR) and follow the sample code to include the slds-lookup component
 - [Download the source code]() and create new components with the same name in your org directly.
 If using an IDE, paste the downloaded files in your ``` src ``` folder. Once done, deploy the code to server and follow the sample code instructions to include the slds-lookup component
+- Include extends attribute in application as follows- ```extends="force:slds"```
 
 ### Sample Code
 The following code demonstrates the code that would integrate the slds-lookup component in your existing lightning components
 ```html
-<c:LookupBar objName="Employee__c"
+<c:LookupBar objectName="Employee__c"
     fieldVal="Project__c"
     icon="standard:entity_milestone"
     label="Related Project"/>
@@ -29,7 +30,7 @@ The following code demonstrates the code that would integrate the slds-lookup co
 
 Attribute Name | Required? | Details | Default Value
 ------------ | ------------- | ------------ | -------------
-``` objName ``` | Yes | API Name of the object on which the lookup field exists |
+``` objectName ``` | Yes | API Name of the object on which the lookup field exists |
 ``` fieldVal ``` | Yes | API Name of the lookup field to be displayed |
 ``` icon ``` | No | Name of the icon to be displayed for the lookup results. The naming convention is similar to the one followed by the [```<lightning:icon>```](https://developer.salesforce.com/docs/atlas.en-us.lightning.meta/lightning/aura_compref_lightning_icon.htm) component. If not specified, no icon would be displayed |
 ``` label ``` | No | If specified, the label provided as an attribute will be displayed as a label to the lookup. Else, the label set in Salesforce would be used | Field label from Salesforce

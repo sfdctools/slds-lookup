@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>LookupBarController</members>
+		<members>LookupBarControllerTest</members>
+        <name>ApexClass</name>
+    </types>
+    <types>
+        <members>LookupBar</members>
+        <members>LookupDataUpdateEvent</members>
+        <members>svgIcon</members>
+        <name>AuraDefinitionBundle</name>
+    </types>
+    <types>
+        <members>slds_214</members>
+        <name>StaticResource</name>
+    </types>
+    <version>35.0</version>
+</Package>
