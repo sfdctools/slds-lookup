@@ -39,3 +39,5 @@ Attribute Name | Required? | Details | Default Value
 ### Known Issues & Limitations
 * Error alert is shown on initial load even though the object name and field name is valid
 * The field list doesn’t disappear on focus out, use times icon for hiding list
+
+**Build Status** ![Build Status](https://jenkins-slds-lookup.193b.starter-ca-central-1.openshiftapps.com/buildStatus/icon?job=slds-lookup-ci)
