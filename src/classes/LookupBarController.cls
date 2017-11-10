@@ -12,6 +12,7 @@ public class LookupBarController{
     public static final String OBJECT_NAME = 'objectName';
     public static final String REQUIRED = 'Required';
     public static final String FIELD_LABEL = 'fieldLabel';
+    public static final String FILTERS = 'Filters';
 
     /* 
     * Method to get the object values from org
@@ -20,14 +21,20 @@ public class LookupBarController{
     * @param      {String}    fieldName       {Holds value of the Field }
     */
     @AuraEnabled
-    public static List<sObject> findByName(String lookupValue, String objName, String fieldName) {
-        String query = '' + 'SELECT Id' +
-                       '' + '     , Name' +
-                       '' + '  FROM ' + objName;
+    public static List<sObject> findByName(String lookupValue, String objName,String fieldName, String filter) {
+        System.debug(objName);
+        System.debug('filter ===='+filter);
+        //System.debug('applyFilters ='+applyFilters);
+        String query =  ' SELECT Id,name'
+                   + '   FROM '+objName;
         if (String.isNotBlank(lookupValue)) {
-            query += ' WHERE Name LIKE \'%' + lookupValue + '%\''; 
-        } 
-        query += String.isNotBlank(lookupValue) ? ' LIMIT 50' : ' LIMIT 5';
+            String name = '%' + lookupValue + '%';
+            query +=' WHERE Name LIKE \'%' + lookupValue + '%\''+' '; 
+        }
+       
+        query += String.isNotBlank(lookupValue) ? (filter!='' ?  'AND '+filter+' LIMIT 50 ' :  ' LIMIT 50 ') 
+                    : (filter!='' ? ' WHERE '+filter+' LIMIT 5 ' : ' LIMIT 5 ');
+        System.debug('query =='+query);
         return Database.query(query);
     }
 
@@ -37,9 +44,11 @@ public class LookupBarController{
     * @param      {String}    fieldName       {Holds value of the entered field}
     */
     @AuraEnabled
-    public static Map<String,String> populatePropertyMap(String objectName, String fieldName) {
+    public static Map<String,String> populatePropertyMap(String objectName, String fieldName, Boolean applyFilters) {
+        
         Map<String, String> propertyMap = new Map<String, String>();
         Schema.SObjectType objType = GLOBALDESCRIBE.get(objectName);
+        System.debug('objType='+objType);
         if (objType != null && objType.getDescribe().fields.getMap().containsKey(fieldName)) {
             propertyMap.put(VALID, VALUE_TRUE);
             Map<String,Schema.SObjectField> fieldsMap = objType.getDescribe().fields.getMap();
@@ -48,7 +57,7 @@ public class LookupBarController{
             String field =  fieldDescribe.getLabel();
             if ( fieldType != Schema.DisplayType.REFERENCE ){
                 propertyMap.put(VALID, VALUE_FALSE);
-            } else{
+            } else {
                 for(Schema.SObjectType reference : fieldDescribe.getReferenceTo()) {
                     propertyMap.put(OBJECT_NAME, reference.getDescribe().getName());
                     break;
@@ -56,10 +65,13 @@ public class LookupBarController{
                 Schema.DescribeFieldResult dfs = fieldsMap.get(fieldName).getDescribe();
                 propertyMap.put(REQUIRED, String.valueOf(!dfs.isNillable()));
                 propertyMap.put(FIELD_LABEL, field);
+                if(applyFilters == true){
+                    propertyMap.put(FILTERS,LookupFilter.appliedlookupFilter(objectName,fieldName));
+                }
             }  
         } else {
             propertyMap.put(VALID, VALUE_FALSE);
         }
         return propertyMap;
-    }
+    }    
 }

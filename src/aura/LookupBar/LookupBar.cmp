@@ -42,6 +42,23 @@
 		type="String" 
 		default="" 
 		description="Holds the value of label entered" />
+
+	<aura:attribute name="applyFilters"
+		type="Boolean"
+		default="false"
+		description="True if user wants to apply lookup filters on the field" />
+	
+	<aura:attribute name="filter"
+		type="String"
+		default=""
+		description="Holds value of lookup Filters" />
+
+	
+
+	<!--aura:attribute name="sessionid"
+		type="String"
+		default="{!$Api.Session_ID}"/-->
+		
 	
 	<!-- Event registration for LookupKey event -->
 	<aura:registerEvent name="lookupEvent" type="c:LookupDataUpdateEvent"/>
@@ -51,7 +68,7 @@
 
 	<div>
 		<!--Alert is shown when the object/field entered is invalid -->
-		<aura:if isTrue="{!!v.propMap.Valid}">
+		<aura:if isTrue="{!v.propMap.Valid == 'false'}">
 			<ui:message title="Error" severity="error" closable="false">
             	Invalid object/field
   			</ui:message>
