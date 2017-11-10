@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AuthProvider xmlns="http://soap.sforce.com/2006/04/metadata">
+    <authorizeUrl>https://saketjoshi-dev-ed.my.salesforce.com/services/oauth2/authorize</authorizeUrl>
+    <consumerKey>3MVG9d8..z.hDcPLKNGs8C81ZtkBSGsm68eKv3gNPUC6bUL5KjU6oqt9fLzjewG_eFHWqL5LQhNSGWLA9V31N</consumerKey>
+    <consumerSecret>zpuA8QpKTcnKA+6ScvZaLnkoGep0eJTG</consumerSecret>
+    <friendlyName>Auth</friendlyName>
+    <includeOrgIdInIdentifier>true</includeOrgIdInIdentifier>
+    <providerType>Salesforce</providerType>
+    <sendAccessTokenInHeader>false</sendAccessTokenInHeader>
+    <sendClientCredentialsInHeader>false</sendClientCredentialsInHeader>
+    <tokenUrl>https://saketjoshi-dev-ed.my.salesforce.com/services/oauth2/token</tokenUrl>
+</AuthProvider>

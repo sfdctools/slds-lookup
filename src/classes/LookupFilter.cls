@@ -1,9 +1,8 @@
 /** Class which will get the lookup Filters, to be used in LookupBar Component
 * 
 * @author       E. Jayaraman Iyer (https://github.com/jayaramaniyer150895)
-* @version      1.0b
+* @version      2.0b
 */
-
 public with sharing class LookupFilter {
     public static final String VALUE_TRUE = 'true';
     public static final String VALUE_FALSE = 'false';
@@ -23,6 +22,7 @@ public with sharing class LookupFilter {
     */
     public static String appliedlookupFilter(String objectName, String fieldName){
         String session_id = UserInfo.getSessionId(), boolFilter = '', filterCondition = '', ids;
+        
         integer filterIndex = 0;
         Metadata metaObj = new Metadata();
         HttpRequest req = new HttpRequest();
@@ -35,7 +35,12 @@ public with sharing class LookupFilter {
             'q=select+id+from+customField+where+developerName=+\''+
             fieldName.removeEnd('__c')+'\'';
         req.setEndPoint(url);
-        HTTPResponse resp = http.send(req);
+        HTTPResponse resp = new HTTPResponse();
+        try{
+            resp = http.send(req);    
+        } catch(System.CalloutException e){
+            return 'Error in processing :- '+e.getMessage(); 
+        }
         String customFieldResults = resp.getBody().replace('\n', '');
         Customfieldwrapper CustomfieldwrapperObj = new Customfieldwrapper();
         CustomfieldwrapperObj = (Customfieldwrapper)JSON.deserialize(customFieldResults, Customfieldwrapper.class);
@@ -46,7 +51,12 @@ public with sharing class LookupFilter {
             'q=select+TargetEntityDefinitionId,+metadata+from+lookupfilter+where+developerName=+\''+
             objectName+'_'+ids+'\'';
         req.setEndPoint(metadataURL);
-        HTTPResponse resp2 = http.send(req);
+        HTTPResponse resp2 = new HTTPResponse();
+        try{
+            resp2 = http.send(req);    
+        } catch(System.CalloutException e){
+                return 'Error in processing :- '+e.getMessage();
+        }
         String lookupfilterjson = resp2.getBody();
         lookupFilterWrapper lookupFilterWrapperObj = new lookupFilterWrapper();
         lookupFilterWrapperObj = (lookupFilterWrapper)JSON.deserialize(lookupfilterjson,lookupFilterWrapper.class);

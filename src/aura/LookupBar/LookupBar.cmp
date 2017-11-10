@@ -2,10 +2,9 @@
 *	Lookup component for lightning
 * 
 * @author       E. Jayaraman Iyer (https://github.com/jayaramaniyer150895)
-* @version      1.0
+* @version      2.0b
 *
 -->
-
 
 <aura:component controller="LookupBarController">
 	<!--Attributes to be used-->
@@ -53,11 +52,10 @@
 		default=""
 		description="Holds value of lookup Filters" />
 
-	
-
-	<!--aura:attribute name="sessionid"
+	<aura:attribute name="alert"
 		type="String"
-		default="{!$Api.Session_ID}"/-->
+		default="false"
+		description="True if any callout exception is caught"/>
 		
 	
 	<!-- Event registration for LookupKey event -->
@@ -68,11 +66,19 @@
 
 	<div>
 		<!--Alert is shown when the object/field entered is invalid -->
-		<aura:if isTrue="{!v.propMap.Valid == 'false'}">
-			<ui:message title="Error" severity="error" closable="false">
-            	Invalid object/field
-  			</ui:message>
-			<!-- If field and object is valid then the bar is shown -->
+		<aura:if isTrue="{!v.propMap.Valid == 'false' || v.alert == 'true'}">
+			<aura:if isTrue="{!v.alert == 'true'}">
+				<ui:message title="Error" severity="error" closable="false">
+            		{!v.propMap.Filters}
+  				</ui:message>
+  				<aura:set attribute="else">
+					<ui:message title="Error" severity="error" closable="false">
+            			Invalid object/field
+  					</ui:message>
+  				</aura:set>
+			</aura:if>
+
+			<!-- If field and object is valid then the lookup field is shown -->
 			<aura:set attribute="else">
 				<div class="slds-form-element">
 					<!-- If user enters a label as attribute then it is shown otherwise

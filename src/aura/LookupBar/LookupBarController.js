@@ -1,7 +1,7 @@
 /** JS class that contains all the utility methods for the component
 * 
 * @author       E. Jayaraman Iyer (https://github.com/jayaramaniyer150895)
-* @version      1.0b
+* @version      2.0b
 */
 
 ({  
@@ -14,30 +14,28 @@
     */
     initialize:function(component, event, helper) {
         var action = component.get("c.populatePropertyMap");
-        console.log(component.get("v.applyFilters"));
         var applyFilters = helper.getValue(component,"v.applyFilters");
         action.setParams({
             "objectName" : helper.getValue(component,"v.objectName").toLowerCase(), 
              "fieldName" : helper.getValue(component,"v.fieldVal").toLowerCase(), 
           "applyFilters" : applyFilters
         });
-        console.log('applyFilters ===',applyFilters);
         action.setCallback(this,function(a){
             if(a.getState() == "SUCCESS"){
                 helper.setValue(component, "v.propMap", a.getReturnValue()); 
                 var propMap = helper.getValue(component,"v.propMap");
                 if (propMap.Valid == "false") {
                     helper.setValue(component,"v.alert","true");
-                    console.log('inside if');
+                }
+                if(propMap.Filters.indexOf("Error") != -1){
+                    component.set("v.alert","true");
                 } else {
                     helper.setValue(component,"v.isReq",propMap.Required);
-                    //console.log('abvvcxvxcvxcvcxv',helper.setValue(component,"v.label",propMap.fieldLabel));
                     component.get("v.label") || helper.setValue(component,"v.label",propMap.fieldLabel);
                     helper.setValue(component,"v.objectName",propMap.objectName);
                     if(applyFilters == true){
                         helper.setValue(component,"v.filter",propMap.Filters);    
                     }
-                    
                 }
             } else {
                 console.error(a.getError()[0].message);

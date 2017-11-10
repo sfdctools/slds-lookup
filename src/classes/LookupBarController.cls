@@ -1,7 +1,7 @@
 /** Controller class which will fetch data from org, to be used in LookupBar Component
 * 
 * @author       E. Jayaraman Iyer (https://github.com/jayaramaniyer150895)
-* @version      1.0b
+* @version      2.0b
 */
 
 public class LookupBarController{
@@ -22,19 +22,14 @@ public class LookupBarController{
     */
     @AuraEnabled
     public static List<sObject> findByName(String lookupValue, String objName,String fieldName, String filter) {
-        System.debug(objName);
-        System.debug('filter ===='+filter);
-        //System.debug('applyFilters ='+applyFilters);
         String query =  ' SELECT Id,name'
                    + '   FROM '+objName;
         if (String.isNotBlank(lookupValue)) {
             String name = '%' + lookupValue + '%';
             query +=' WHERE Name LIKE \'%' + lookupValue + '%\''+' '; 
         }
-       
         query += String.isNotBlank(lookupValue) ? (filter!='' ?  'AND '+filter+' LIMIT 50 ' :  ' LIMIT 50 ') 
                     : (filter!='' ? ' WHERE '+filter+' LIMIT 5 ' : ' LIMIT 5 ');
-        System.debug('query =='+query);
         return Database.query(query);
     }
 
@@ -48,7 +43,6 @@ public class LookupBarController{
         
         Map<String, String> propertyMap = new Map<String, String>();
         Schema.SObjectType objType = GLOBALDESCRIBE.get(objectName);
-        System.debug('objType='+objType);
         if (objType != null && objType.getDescribe().fields.getMap().containsKey(fieldName)) {
             propertyMap.put(VALID, VALUE_TRUE);
             Map<String,Schema.SObjectField> fieldsMap = objType.getDescribe().fields.getMap();
