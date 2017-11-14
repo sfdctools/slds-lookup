@@ -22,21 +22,20 @@ public with sharing class LookupFilter {
     */
     public static String appliedlookupFilter(String objectName, String fieldName){
         String session_id = UserInfo.getSessionId(), boolFilter = '', filterCondition = '', ids;
-        
         integer filterIndex = 0;
         Metadata metaObj = new Metadata();
         HttpRequest req = new HttpRequest();
         req.setHeader(CONTENT_TYPE, APPLICATION_JSON);
         req.setHeader(AUTHORIZATION,BEARER+ session_id);
-        String instance = System.URL.getSalesforceBaseUrl().toExternalForm();
         Http http = new Http();
         req.setMethod('GET');
-        String url = 'callout:authenticate/services/data/v41.0/tooling/query?'+
-            'q=select+id+from+customField+where+developerName=+\''+
-            fieldName.removeEnd('__c')+'\'';
+        String url = 'callout:authenticate/services/data/v41.0/tooling/query?q='
+            +'select+id+'
+            +'from+customField+'
+            +'where+developerName=+\''+fieldName.removeEnd('__c')+'\'';
         req.setEndPoint(url);
         HTTPResponse resp = new HTTPResponse();
-        try{
+        try {
             resp = http.send(req);    
         } catch(System.CalloutException e){
             return 'Error in processing :- '+e.getMessage(); 
@@ -47,9 +46,10 @@ public with sharing class LookupFilter {
         for(AttributeObj att : CustomfieldwrapperObj.records){
             ids = att.id;
         }
-        String metadataURL = 'callout:authenticate/services/data/v41.0/tooling/query?'+
-            'q=select+TargetEntityDefinitionId,+metadata+from+lookupfilter+where+developerName=+\''+
-            objectName+'_'+ids+'\'';
+        String metadataURL = 'callout:authenticate/services/data/v41.0/tooling/query?q='
+            +'select+TargetEntityDefinitionId,+metadata+'
+            +'from+lookupfilter+'
+            +'where+developerName=+\''+objectName+'_'+ids+'\'';
         req.setEndPoint(metadataURL);
         HTTPResponse resp2 = new HTTPResponse();
         try{
@@ -65,11 +65,11 @@ public with sharing class LookupFilter {
         }
         if(metaObj.active == true){
             boolFilter = metaObj.booleanFilter;
-            if(metaObj.filterItems.size() > 1){
+            if(metaObj.filterItems.size() > 1) {
                 if(boolFilter == null){
                     boolFilter = '';
-                    for(integer j = 1; j <= metaObj.filterItems.size() ; j++){
-                        boolFilter = boolFilter + ' ' + String.valueOf(j)+' '+'AND';
+                    for(integer j = 1 ; j <= metaObj.filterItems.size() ; j++) {
+                        boolFilter = boolFilter + ' ' + String.valueOf(j) + ' ' + 'AND';
                     }
                     boolFilter = boolFilter.removeEnd('AND');   
                 }
@@ -80,7 +80,7 @@ public with sharing class LookupFilter {
                     filterIndex++;
                     operation = filter.operation;
                     value = filter.value == null ? filter.valueField : filter.value;
-                    Map<String,String> operatorMap = new Map<String,String>{
+                    Map<String,String> operatorMap = new Map<String,String> {
                              EQUALS     =>  field   +   '='+'\''+value+'\'',
                           NOT_EQUAL     =>  field   +   '!=' + '\''+value+'\'',
                            CONTAINS     =>  field   +   ' LIKE \'%'+value+'%\'',
@@ -90,9 +90,9 @@ public with sharing class LookupFilter {
                     if(value == VALUE_TRUE || value == VALUE_FALSE){
                         operatorMap.put(operation,  operatorMap.get(operation).replace('\'', ''));
                     }
-                    if(operatorMap.containsKey(operation)){
+                    if(operatorMap.containsKey(operation)) {
                         if(operation != EQUALS && operation != NOT_EQUAL){
-                            if(operation == NOT_CONTAIN){
+                            if(operation == NOT_CONTAIN) {
                                 filterCondition = operatorMap.get(operation);
                             }
                             if(operation == STARTS_WITH){
@@ -113,7 +113,9 @@ public with sharing class LookupFilter {
         return '';
     }   
 
-   public class lookupFilterWrapper{
+    /* Wrapper Class for getting the metadata for lookup filters from tooling api
+    */
+    public class lookupFilterWrapper{
         public Integer size;
         public Integer totalSize;
         public Boolean done;
@@ -150,6 +152,8 @@ public with sharing class LookupFilter {
         public String valueField;
     }
 
+    /* Wrapper Class for getting the field Id for lookup field from tooling api
+    */
     public class Customfieldwrapper{
         public Integer size;
         public Integer totalSize;

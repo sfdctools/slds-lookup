@@ -28,8 +28,8 @@ public class LookupBarController{
             String name = '%' + lookupValue + '%';
             query +=' WHERE Name LIKE \'%' + lookupValue + '%\''+' '; 
         }
-        query += String.isNotBlank(lookupValue) ? (filter!='' ?  'AND '+filter+' LIMIT 50 ' :  ' LIMIT 50 ') 
-                    : (filter!='' ? ' WHERE '+filter+' LIMIT 5 ' : ' LIMIT 5 ');
+        query += String.isNotBlank(lookupValue) ? ( filter!='' ?  'AND ' + filter + ' LIMIT 50 ' :  ' LIMIT 50 ') 
+                    : ( filter != '' ? ' WHERE ' + filter + ' LIMIT 5 ' : ' LIMIT 5 ');
         return Database.query(query);
     }
 

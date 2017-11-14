@@ -24,7 +24,7 @@
 
 	<aura:attribute name="objectName" 
 		type="String" 
-		default="null" 
+		default="" 
 		description="attribute holds value of object entered" />
 
 	<aura:attribute name="close"

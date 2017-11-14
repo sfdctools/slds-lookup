@@ -13,7 +13,7 @@
     * @param      {Object}    helper        {Helper class}      
     */
     initialize:function(component, event, helper) {
-        var action = component.get("c.populatePropertyMap");
+        var action = helper.getValue(component,"c.populatePropertyMap");
         var applyFilters = helper.getValue(component,"v.applyFilters");
         action.setParams({
             "objectName" : helper.getValue(component,"v.objectName").toLowerCase(), 
@@ -25,22 +25,22 @@
                 helper.setValue(component, "v.propMap", a.getReturnValue()); 
                 var propMap = helper.getValue(component,"v.propMap");
                 if (propMap.Valid == "false") {
-                    helper.setValue(component,"v.alert","true");
+                    return false;
                 }
-                if(propMap.Filters.indexOf("Error") != -1){
-                    component.set("v.alert","true");
-                } else {
-                    helper.setValue(component,"v.isReq",propMap.Required);
-                    component.get("v.label") || helper.setValue(component,"v.label",propMap.fieldLabel);
-                    helper.setValue(component,"v.objectName",propMap.objectName);
-                    if(applyFilters == true){
-                        helper.setValue(component,"v.filter",propMap.Filters);    
-                    }
+                if(helper.getValue(component,"v.applyFilters") == true){
+                    if(propMap.Filters.indexOf("Error") != -1){
+                        helper.setValue(component,"v.alert","true");
+                    }        
                 }
+                helper.setValue(component,"v.isReq",propMap.Required);
+                helper.getValue(component,"v.label") || helper.setValue(component,"v.label",propMap.fieldLabel);
+                helper.setValue(component,"v.objectName",propMap.objectName);
+                if(applyFilters == true){
+                    helper.setValue(component,"v.filter",propMap.Filters);    
+                } 
             } else {
                 console.error(a.getError()[0].message);
             }
-            console.log("filters === ",component.get("v.filter"));
         });
         $A.enqueueAction(action);
     },
