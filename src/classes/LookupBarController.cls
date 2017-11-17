@@ -13,6 +13,7 @@ public class LookupBarController{
     public static final String REQUIRED = 'Required';
     public static final String FIELD_LABEL = 'fieldLabel';
     public static final String FILTERS = 'Filters';
+    public static final String LOOKUP_FILTER = 'LookupFilter';
 
     /* 
     * Method to get the object values from org
@@ -23,7 +24,7 @@ public class LookupBarController{
     @AuraEnabled
     public static List<sObject> findByName(String lookupValue, String objName,String fieldName, String filter) {
         String query =  ' SELECT Id'
-                         +    ', name'
+                         +    ', Name'
                          +' FROM '+objName;
         if (String.isNotBlank(lookupValue)) {
             String name = '%' + lookupValue + '%';
@@ -60,8 +61,17 @@ public class LookupBarController{
                 Schema.DescribeFieldResult dfs = fieldsMap.get(fieldName).getDescribe();
                 propertyMap.put(REQUIRED, String.valueOf(!dfs.isNillable()));
                 propertyMap.put(FIELD_LABEL, field);
+                Type filterExtention = Type.forName(LOOKUP_FILTER);
                 if(applyFilters == true){
-                    propertyMap.put(FILTERS, LookupFilter.getLookupFilter(objectName,fieldName));
+                    if(filterExtention == null){
+                        propertyMap.put(FILTERS, 
+                            'Extension not found,'
+                            +' Please install extension for lookup filters, or set attribute appled filters as false'
+                            );  
+                    } else{
+                        propertyMap.put(FILTERS, LookupFilter.getLookupFilter(objectName,fieldName));    
+                    }
+                    
                 }
             }  
         } else {

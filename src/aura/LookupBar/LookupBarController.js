@@ -30,6 +30,9 @@
                 if(helper.getValue(component,"v.applyFilters") == true){
                     if(propMap.Filters.indexOf("Error") != -1){
                         helper.setValue(component,"v.alert","true");
+                    }
+                    if(propMap.Filters.indexOf("Extension") != -1) {
+                        helper.setValue(component,"v.alert","true");
                     }        
                 }
                 helper.setValue(component,"v.isReq",propMap.Required);

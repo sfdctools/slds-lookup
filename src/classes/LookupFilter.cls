@@ -39,7 +39,7 @@ public with sharing class LookupFilter {
     * @param      {String}    fieldName       {Holds value of the entered field}
     */
     public static String getLookupFilter( String objectName, String fieldName ) {
-        String session_id = UserInfo.getSessionId(), boolFilter = '', filterCondition = '', ids, query;
+        String session_id = UserInfo.getSessionId(), boolFilter = '', filterCondition = '', fieldId, query;
         integer filterIndex = 0;
         Metadata metaObj = new Metadata();
         HttpRequest req = new HttpRequest();
@@ -47,8 +47,8 @@ public with sharing class LookupFilter {
         req.setHeader(AUTHORIZATION, BEARER + session_id);
         Http http = new Http();
         req.setMethod('GET');
-        query = 'SELECT id '
-                + 'FROM customField '
+        query = 'SELECT Id '
+                + 'FROM CustomField '
                 +'WHERE developerName= \'' + fieldName.removeEnd('__c') + '\'';
         String endpoint = BASE_ENDPOINT + EncodingUtil.urlEncode(query, 'UTF-8') ; 
         req.setEndPoint(endpoint);
@@ -62,11 +62,11 @@ public with sharing class LookupFilter {
         Customfieldwrapper CustomfieldwrapperObj = new Customfieldwrapper();
         CustomfieldwrapperObj = (Customfieldwrapper)JSON.deserialize(customFieldResults, Customfieldwrapper.class);
         for(AttributeObj att : CustomfieldwrapperObj.records){
-            ids = att.id;
+            fieldId = att.id;
         }
-        query = 'SELECT metadata '
-                + 'FROM lookupfilter '
-                +'WHERE developerName= \''+objectName+'_'+ids+'\'';
+        query = 'SELECT Metadata '
+                + 'FROM Lookupfilter '
+                +'WHERE developerName= \''+objectName+'_'+fieldId+'\'';
         endpoint = BASE_ENDPOINT + EncodingUtil.urlEncode(query, 'UTF-8');
         req.setEndPoint(endpoint);
         HTTPResponse resp2 = new HTTPResponse();

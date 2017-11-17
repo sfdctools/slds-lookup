@@ -1,3 +1,8 @@
+/** Test Class to test the functionality of LookupFilter
+* 
+* @author       E. Jayaraman Iyer (https://github.com/jayaramaniyer150895)
+* @version      2.0b
+*/
 @isTest 
 global class LookupFilterTest{
     public static final String NOT_EQUAL = 'notEqual';

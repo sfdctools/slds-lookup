@@ -1,7 +1,7 @@
 /** Test Class to test the functionality of LookupBarController
 * 
 * @author       E. Jayaraman Iyer (https://github.com/jayaramaniyer150895)
-* @version      1.0b
+* @version      2.0b
 */
 @isTest
 global class LookupBarControllerTest {
@@ -151,7 +151,5 @@ global class LookupBarControllerTest {
         );
     }
 }
-
-//Response from google if the PIN code is not found
 
 
