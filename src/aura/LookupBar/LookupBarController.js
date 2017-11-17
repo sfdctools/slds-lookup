@@ -87,7 +87,7 @@
     * @param      {Object}    event         {Holds event}
     * @param      {Object}    helper        {Helper class}      
     */
-    setValuesToField: function(component, event, helper){
+    setValuesToField: function(component, event, helper) {
         helper.setValue(component,"v.close","true");
         helper.setValue(component,"v.valuelist",[]);
         component.find("txtLookup").set("v.value",event.target.getAttribute("data-value"));
@@ -105,7 +105,7 @@
     * @param      {Object}    event         {Holds event}
     * @param      {Object}    helper        {Helper class}      
     */
-    onClose : function(component, event, helper){
+    onClose : function(component, event, helper) {
         helper.setValue(component,"v.close","false");
         component.find("txtLookup").set("v.value",'');
         helper.setValue(component,"v.valuelist",[]);

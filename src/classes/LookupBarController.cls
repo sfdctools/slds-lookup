@@ -22,8 +22,9 @@ public class LookupBarController{
     */
     @AuraEnabled
     public static List<sObject> findByName(String lookupValue, String objName,String fieldName, String filter) {
-        String query =  ' SELECT Id,name'
-                   + '   FROM '+objName;
+        String query =  ' SELECT Id'
+                         +    ', name'
+                         +' FROM '+objName;
         if (String.isNotBlank(lookupValue)) {
             String name = '%' + lookupValue + '%';
             query +=' WHERE Name LIKE \'%' + lookupValue + '%\''+' '; 
@@ -60,7 +61,7 @@ public class LookupBarController{
                 propertyMap.put(REQUIRED, String.valueOf(!dfs.isNillable()));
                 propertyMap.put(FIELD_LABEL, field);
                 if(applyFilters == true){
-                    propertyMap.put(FILTERS,LookupFilter.appliedlookupFilter(objectName,fieldName));
+                    propertyMap.put(FILTERS, LookupFilter.getLookupFilter(objectName,fieldName));
                 }
             }  
         } else {
