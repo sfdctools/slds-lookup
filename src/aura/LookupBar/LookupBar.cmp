@@ -51,7 +51,7 @@
 
 	<div>
 		<!--Alert is shown when the object/field entered is invalid -->
-		<aura:if isTrue="{!!v.propMap.Valid}">
+		<aura:if isTrue="{!v.propMap.Valid == 'false'}">
 			<ui:message title="Error" severity="error" closable="false">
             	Invalid object/field
   			</ui:message>
