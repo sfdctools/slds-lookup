@@ -15,9 +15,15 @@
 .THIS .recordCard > .recordValue {
     display: inline; 
     margin-left: 10px;
+    word-wrap: break-word;
+    word-break: break-all;
 }
 .THIS .slds-box{
     padding: 0;
+    background-color: white;
+    position: absolute;
+    z-index: 9999;
+    width: 100%;
 }
 .THIS .FixDivSize{
     height: 185px;

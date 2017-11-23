@@ -75,13 +75,19 @@
     * @param      {Object}    helper        {Helper class}      
     */
     setValuesToField: function(component, event, helper){
+        var value = event.target.getAttribute ? event.target.getAttribute("data-value") : undefined;
+        value = value || event.currentTarget.getAttribute("data-value");
+        
+        var id = event.target.getAttribute ? event.target.getAttribute("data-id") : undefined;
+        id = id || event.currentTarget.getAttribute("data-id");
+        
         helper.setValue(component,"v.close","true");
         helper.setValue(component,"v.valuelist",[]);
-        component.find("txtLookup").set("v.value",event.target.getAttribute("data-value"));
+        component.find("txtLookup").set("v.value", value);
         var myEvent = $A.get("e.c:LookupDataUpdateEvent");
         myEvent.setParams({
-              "lookupId"  :  event.target.getAttribute("data-id"), 
-            "lookupName"  :  event.target.getAttribute("data-value")
+              "lookupId"  :  id, 
+            "lookupName"  :  value
         });
         myEvent.fire();
     },
