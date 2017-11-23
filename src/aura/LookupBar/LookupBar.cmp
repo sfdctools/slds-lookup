@@ -86,6 +86,10 @@
 					<label class="slds-form-element__label" for="text-input-id-1">
 						{!v.label || v.propMap.fieldLabel}
 					</label>
+					<div class="slds-form-element__control slds-input-has-icon slds-input-has-left">
+						<c:svgIcon class="slds-icon slds-input__icon slds-input__icon_right" 
+							xlinkHref="/resource/slds_214/standard/svg/symbols.svg#account" />
+					</div>
 					<div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_right">
 						<div>
 							<ui:inputText aura:id="txtLookup" class="slds-input" required="{!v.propMap.Required}" 
